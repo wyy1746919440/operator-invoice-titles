@@ -149,7 +149,16 @@
       <div class="table-wrap">
         <table class="gt">
           <thead>
-            <tr><th>发票抬头</th><th>抬头类型</th><th>单位税号</th><th>单位地址</th><th style="width:140px;">操作</th></tr>
+            <tr>
+              <th>发票抬头</th>
+              <th>抬头类型</th>
+              <th>单位税号</th>
+              <th>单位地址</th>
+              <th>单位电话</th>
+              <th>开户银行</th>
+              <th>银行账户</th>
+              <th style="width:140px;">操作</th>
+            </tr>
           </thead>
           <tbody id="titleTbody"></tbody>
         </table>
@@ -199,7 +208,7 @@
   /* ===== 发票抬头管理 ===== */
   var TITLES = [
     {name:'韦小宝', type:'person'},
-    {name:'小王有限公司123', type:'company', tax:'124876537946894', addr:'', tel:'', bank:'', acc:''},
+    {name:'小王有限公司123', type:'company', tax:'124876537946894', addr:'广东省深圳市南山区', tel:'15820447583', bank:'中国银行', acc:'2312312321'},
     {name:'王泳瑜', type:'person'}
   ];
   var editIdx = -1;
@@ -208,16 +217,21 @@
     var tbody = document.getElementById('titleTbody');
     tbody.innerHTML = '';
     if(TITLES.length === 0){
-      tbody.innerHTML = '<tr><td colspan="5"><div class="empty">真的没有了~</div></td></tr>';
+      tbody.innerHTML = '<tr><td colspan="8"><div class="empty">真的没有了~</div></td></tr>';
       return;
     }
     TITLES.forEach(function(t, i){
+      var isC = t.type === 'company';
+      var v = function(x){ return isC ? (x || '-') : '-'; };
       var tr = document.createElement('tr');
       tr.innerHTML =
         '<td style="color:var(--text);">'+t.name+'</td>'+
-        '<td>'+(t.type==='company'?'企业':'个人')+'</td>'+
-        '<td>'+(t.type==='company' ? (t.tax||'-') : '-')+'</td>'+
-        '<td>'+(t.type==='company' ? (t.addr||'-') : '-')+'</td>'+
+        '<td>'+(isC?'企业':'个人')+'</td>'+
+        '<td>'+v(t.tax)+'</td>'+
+        '<td>'+v(t.addr)+'</td>'+
+        '<td>'+v(t.tel)+'</td>'+
+        '<td>'+v(t.bank)+'</td>'+
+        '<td>'+v(t.acc)+'</td>'+
         '<td><a href="javascript:;" class="lnk" onclick="openTitleModal('+i+')">编辑</a>'+
         '<a href="javascript:;" class="lnk-danger" onclick="delTitle('+i+')">删除</a></td>';
       tbody.appendChild(tr);
