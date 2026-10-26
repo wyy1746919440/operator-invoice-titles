@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>发票抬头 · 运营商平台（PC端）</title>
+<style>
+  :root{
+    --primary:#2b7cff;
+    --primary-hover:#1f6ef2;
+    --primary-light:#eaf2ff;
+    --text:#1f2329;
+    --text-2:#4e5969;
+    --text-3:#86909c;
+    --border:#e5e6eb;
+    --border-2:#f2f3f5;
+    --bg:#f5f6f8;
+    --danger:#f53f3f;
+    --success:#00b578;
+    --radius:6px;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  body{
+    font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",sans-serif;
+    background:var(--bg);color:var(--text);font-size:14px;
+  }
+
+  .topnav{
+    height:56px;background:#fff;border-bottom:1px solid var(--border);
+    display:flex;align-items:center;padding:0 24px;position:sticky;top:0;z-index:30;
+  }
+  .logo{display:flex;align-items:center;gap:10px;font-size:20px;font-weight:700;margin-right:40px;}
+  .logo .mark{width:30px;height:30px;border-radius:50%;background:#f0b100;color:#fff;display:flex;align-items:center;justify-content:center;font-size:15px;}
+  .nav-item{padding:0 18px;line-height:56px;color:var(--text-2);cursor:pointer;font-size:14px;position:relative;}
+  .nav-item:hover{color:var(--primary);}
+  .nav-item.active{color:var(--primary);font-weight:600;}
+  .nav-item.active::after{content:"";position:absolute;left:18px;right:18px;bottom:0;height:3px;border-radius:2px 2px 0 0;background:var(--primary);}
+  .nav-right{margin-left:auto;display:flex;align-items:center;gap:16px;color:var(--text-2);font-size:13px;}
+  .avatar{width:28px;height:28px;border-radius:50%;background:var(--primary);color:#fff;display:flex;align-items:center;justify-content:center;font-size:12px;}
+
+  .layout{display:flex;align-items:flex-start;min-height:calc(100vh - 56px);}
+  .sidebar{
+    width:190px;flex-shrink:0;background:#fff;border-right:1px solid var(--border);
+    position:sticky;top:56px;height:calc(100vh - 56px);overflow:auto;padding:8px 0;
+  }
+  .side-item{padding:8px 12px 8px 20px;border-radius:4px;color:var(--text-3);cursor:pointer;font-size:13px;margin-bottom:1px;}
+  .side-item:hover{background:var(--border-2);}
+  .side-item.main{
+    display:flex;align-items:center;gap:6px;color:var(--text);font-weight:600;
+    font-size:14px;padding:12px 12px 8px 16px;cursor:default;
+  }
+  .side-item.main .ic{color:var(--primary);font-style:normal;}
+  .side-item.sub{padding-left:34px;}
+  .side-item.sub:hover{color:var(--text-2);}
+  .side-item.sub.active{background:#fdecec;color:var(--primary);font-weight:500;}
+
+  .content{flex:1;min-width:0;padding:16px 24px 24px;display:flex;flex-direction:column;}
+  .breadcrumb{font-size:13px;color:var(--text-3);margin-bottom:14px;}
+  .breadcrumb b{color:var(--text);font-weight:500;}
+
+  .card{background:#fff;border-radius:var(--radius);box-shadow:0 1px 2px rgba(0,0,0,.03);}
+
+  .modal .frow{margin-bottom:14px;}
+  .modal h3{font-size:16px;margin-bottom:16px;}
+
+  .frow{display:flex;align-items:center;margin-bottom:16px;}
+  .frow .flabel{width:90px;flex-shrink:0;text-align:right;padding-right:12px;color:var(--text-2);font-size:13px;}
+  .frow .flabel .req{color:var(--danger);margin-right:2px;}
+  .frow .fctrl{width:300px;}
+  .ipt,select.ipt{
+    width:100%;height:32px;border:1px solid var(--border);border-radius:4px;padding:0 10px;
+    font-size:13px;color:var(--text);outline:none;font-family:inherit;background:#fff;
+  }
+  .ipt:focus{border-color:var(--primary);}
+  .radio-row{display:flex;gap:28px;height:32px;align-items:center;}
+  .radio-item{display:flex;align-items:center;gap:6px;cursor:pointer;font-size:13px;color:var(--text-2);user-select:none;}
+  .radio-item .r{width:15px;height:15px;border-radius:50%;border:1px solid #c9cdd4;background:#fff;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+  .radio-item.on{color:var(--primary);}
+  .radio-item.on .r{border-color:var(--primary);}
+  .radio-item.on .r::after{content:"";width:7px;height:7px;border-radius:50%;background:var(--primary);}
+  .form-hint{font-size:12px;color:var(--text-3);margin-left:8px;}
+
+  .btn{
+    height:30px;padding:0 16px;border-radius:4px;border:1px solid var(--border);
+    background:#fff;color:var(--text-2);cursor:pointer;font-size:13px;font-family:inherit;transition:all .15s;
+  }
+  .btn:hover{border-color:var(--primary);color:var(--primary);}
+  .btn-primary{background:var(--primary);border-color:var(--primary);color:#fff;}
+  .btn-primary:hover{background:var(--primary-hover);color:#fff;}
+
+  .table-wrap{border:1px solid var(--border);border-top:none;border-radius:0 0 4px 4px;overflow:hidden;}
+  table.gt{width:100%;border-collapse:collapse;font-size:13px;}
+  table.gt th{
+    background:#f7f8fa;color:var(--text-2);font-weight:500;text-align:left;
+    padding:10px 14px;border-bottom:1px solid var(--border);white-space:nowrap;
+  }
+  table.gt td{padding:10px 14px;border-bottom:1px solid var(--border-2);color:var(--text-2);}
+  table.gt tbody tr:hover{background:#fafbfc;}
+  table.gt tr:last-child td{border-bottom:none;}
+  .empty{padding:40px 0;text-align:center;color:var(--text-3);font-size:13px;}
+
+  .lnk{color:var(--primary);text-decoration:none;font-size:13px;}
+  .lnk:hover{text-decoration:underline;}
+  .lnk-danger{color:var(--danger);text-decoration:none;font-size:13px;margin-left:12px;}
+  .lnk-danger:hover{text-decoration:underline;}
+
+  .mask{position:fixed;inset:0;background:rgba(0,0,0,.45);display:none;align-items:center;justify-content:center;z-index:100;}
+  .mask.show{display:flex;}
+  .modal{background:#fff;border-radius:8px;width:400px;padding:28px;text-align:center;}
+  .modal h3{font-size:17px;margin-bottom:8px;}
+</style>
+</head>
+<body>
+
+<div class="topnav">
+  <div class="logo"><span class="mark">鹅</span>大黄鹅</div>
+  <div class="nav-item">售货机运营</div>
+  <div class="nav-item active">结算中心</div>
+  <div class="nav-item">大黄鹅服务商</div>
+  <div class="nav-item">进货销平台</div>
+  <div class="nav-right">
+    <span>DEX</span><span>📋</span><span>🔔</span><span>🌐 中文 ▾</span>
+    <span class="avatar">王</span><span>王泳瑜 ▾</span>
+  </div>
+</div>
+
+<div class="layout">
+  <aside class="sidebar">
+    <div class="side-item main"><span class="ic">Ⓢ</span>结算中心</div>
+    <div class="side-item sub">账户总览</div>
+    <div class="side-item sub">账户明细</div>
+    <div class="side-item sub">提现记录</div>
+    <div class="side-item sub">服务流水账单</div>
+    <div class="side-item sub">服务凭单</div>
+    <div class="side-item sub">售后记录</div>
+    <div class="side-item sub">福利记录</div>
+    <div class="side-item sub">增值打款</div>
+    <div class="side-item sub">服务费政策</div>
+    <div class="side-item sub active">开票管理</div>
+  </aside>
+
+  <main class="content">
+    <div class="breadcrumb">当前位置：结算中心 / 开票管理 / <b>发票抬头</b></div>
+
+    <div class="card" style="padding:20px 24px 24px;">
+      <div style="margin-bottom:16px;">
+        <button class="btn btn-primary" onclick="openTitleModal(-1)">新增发票抬头</button>
+      </div>
+      <div class="table-wrap">
+        <table class="gt">
+          <thead>
+            <tr><th>发票抬头</th><th>抬头类型</th><th>单位税号</th><th>单位地址</th><th style="width:140px;">操作</th></tr>
+          </thead>
+          <tbody id="titleTbody"></tbody>
+        </table>
+      </div>
+    </div>
+  </main>
+</div>
+
+<!-- 新增/编辑发票抬头弹窗（字段与小程序一致） -->
+<div class="mask" id="titleMask">
+  <div class="modal" style="width:520px;text-align:left;padding:24px 28px;">
+    <h3 id="titleModalHead">新增发票抬头</h3>
+
+    <div class="frow">
+      <div class="flabel"><span class="req">*</span>发票抬头</div>
+      <div class="fctrl"><input class="ipt" id="tName" placeholder="请输入发票抬头"></div>
+    </div>
+
+    <div class="frow">
+      <div class="flabel"><span class="req">*</span>抬头类型</div>
+      <div class="fctrl">
+        <div class="radio-row" id="tType">
+          <span class="radio-item on" data-v="company"><span class="r"></span>企业</span>
+          <span class="radio-item" data-v="person"><span class="r"></span>个人</span>
+        </div>
+      </div>
+    </div>
+
+    <div id="tCompany">
+      <div class="frow"><div class="flabel"><span class="req">*</span>单位税号</div><div class="fctrl"><input class="ipt" id="tTax" placeholder="输入税号或营业执照代码"></div></div>
+      <div class="frow"><div class="flabel"><span class="req">*</span>单位地址</div><div class="fctrl"><input class="ipt" id="tAddr" maxlength="100" placeholder="100字以内，不能为空"></div></div>
+      <div class="frow"><div class="flabel"><span class="req">*</span>单位电话</div><div class="fctrl"><input class="ipt" id="tTel" maxlength="20" placeholder="20字以内，不能为空"></div></div>
+      <div class="frow"><div class="flabel">开户银行</div><div class="fctrl"><input class="ipt" id="tBank" placeholder="请输入"></div></div>
+      <div class="frow"><div class="flabel">银行账户</div><div class="fctrl"><input class="ipt" id="tAcc" placeholder="请输入"></div></div>
+    </div>
+
+    <div class="form-hint" id="tHint" style="margin:0 0 8px 90px;display:none;color:var(--danger);"></div>
+
+    <div style="text-align:right;margin-top:16px;">
+      <button class="btn" onclick="closeTitleModal()">取消</button>
+      <button class="btn btn-primary" onclick="saveTitle()">保存</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  /* ===== 发票抬头管理 ===== */
+  var TITLES = [
+    {name:'韦小宝', type:'person'},
+    {name:'小王有限公司123', type:'company', tax:'124876537946894', addr:'', tel:'', bank:'', acc:''},
+    {name:'王泳瑜', type:'person'}
+  ];
+  var editIdx = -1;
+
+  function renderTitles(){
+    var tbody = document.getElementById('titleTbody');
+    tbody.innerHTML = '';
+    if(TITLES.length === 0){
+      tbody.innerHTML = '<tr><td colspan="5"><div class="empty">真的没有了~</div></td></tr>';
+      return;
+    }
+    TITLES.forEach(function(t, i){
+      var tr = document.createElement('tr');
+      tr.innerHTML =
+        '<td style="color:var(--text);">'+t.name+'</td>'+
+        '<td>'+(t.type==='company'?'企业':'个人')+'</td>'+
+        '<td>'+(t.type==='company' ? (t.tax||'-') : '-')+'</td>'+
+        '<td>'+(t.type==='company' ? (t.addr||'-') : '-')+'</td>'+
+        '<td><a href="javascript:;" class="lnk" onclick="openTitleModal('+i+')">编辑</a>'+
+        '<a href="javascript:;" class="lnk-danger" onclick="delTitle('+i+')">删除</a></td>';
+      tbody.appendChild(tr);
+    });
+  }
+
+  function openTitleModal(i){
+    editIdx = i;
+    var t = i >= 0 ? TITLES[i] : null;
+    document.getElementById('titleModalHead').textContent = i >= 0 ? '编辑发票抬头' : '新增发票抬头';
+    document.getElementById('tName').value = t ? t.name : '';
+    document.getElementById('tTax').value = (t && t.tax) || '';
+    document.getElementById('tAddr').value = (t && t.addr) || '';
+    document.getElementById('tTel').value = (t && t.tel) || '';
+    document.getElementById('tBank').value = (t && t.bank) || '';
+    document.getElementById('tAcc').value = (t && t.acc) || '';
+    setType('tType', t ? t.type : 'company');
+    syncTCompany();
+    document.getElementById('tHint').style.display = 'none';
+    document.getElementById('titleMask').classList.add('show');
+  }
+  function closeTitleModal(){
+    document.getElementById('titleMask').classList.remove('show');
+  }
+  function setType(groupId, v){
+    if(!v) return;
+    document.querySelectorAll('#'+groupId+' .radio-item').forEach(function(i){
+      i.classList.toggle('on', i.dataset.v === v);
+    });
+  }
+  function syncTCompany(){
+    var isCompany = document.querySelector('#tType .radio-item[data-v="company"]').classList.contains('on');
+    document.getElementById('tCompany').style.display = isCompany ? 'block' : 'none';
+  }
+  document.querySelectorAll('#tType .radio-item').forEach(function(item){
+    item.addEventListener('click', function(){
+      document.querySelectorAll('#tType .radio-item').forEach(function(i){i.classList.remove('on');});
+      item.classList.add('on');
+      syncTCompany();
+    });
+  });
+
+  function saveTitle(){
+    var name = document.getElementById('tName').value.trim();
+    var type = document.querySelector('#tType .radio-item.on').dataset.v;
+    var hint = document.getElementById('tHint');
+    if(!name){
+      hint.textContent = '请输入发票抬头';
+      hint.style.display = 'block';
+      return;
+    }
+    var obj = {name:name, type:type};
+    if(type === 'company'){
+      obj.tax = document.getElementById('tTax').value.trim();
+      obj.addr = document.getElementById('tAddr').value.trim();
+      obj.tel = document.getElementById('tTel').value.trim();
+      obj.bank = document.getElementById('tBank').value.trim();
+      obj.acc = document.getElementById('tAcc').value.trim();
+      if(!obj.tax){
+        hint.textContent = '请输入单位税号';
+        hint.style.display = 'block';
+        return;
+      }
+      if(!obj.addr || obj.addr.length > 100){
+        hint.textContent = '单位地址不能为空，100字以内';
+        hint.style.display = 'block';
+        return;
+      }
+      if(!obj.tel || obj.tel.length > 20){
+        hint.textContent = '单位电话不能为空，20字以内';
+        hint.style.display = 'block';
+        return;
+      }
+    }
+    if(editIdx >= 0){ TITLES[editIdx] = obj; }
+    else{ TITLES.push(obj); }
+    closeTitleModal();
+    renderTitles();
+  }
+
+  function delTitle(i){
+    if(confirm('确定删除发票抬头「' + TITLES[i].name + '」吗？')){
+      TITLES.splice(i, 1);
+      renderTitles();
+    }
+  }
+
+  renderTitles();
+</script>
+</body>
+</html>
